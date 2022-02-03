@@ -17,41 +17,36 @@ namespace mastermind
         
         public List<Colour> GetPlayersColourGuess()
         {
-            
-            Player_Instructions();
-            var stringResponse = _console.ReadLine().ToUpper();
-            var colourStringList = stringResponse.Split((',')).ToList();
+            var playerInput = GetPlayerColourInput();
 
-            while (colourStringList.Count != 4)
+            while (_validator.ThereAreNotFourEntries(playerInput))
             {
-                _console.WriteLine(Constants.Error_Message_Invalid_Guess_Length);
-                Player_Instructions();
-                stringResponse = _console.ReadLine().ToUpper();
-                colourStringList = stringResponse.Split((',')).ToList();
+                PrintErrorMessage(Constants.Error_Message_Invalid_Guess_Length);
+                playerInput = GetPlayerColourInput();
             }
 
-            foreach (var colour in colourStringList)
+            while (_validator.AnyColourIsInvalidInInput(playerInput))
             {
-                while (!_validator.IsValidColour(colour))
-                {
-                    _console.WriteLine(Constants.Error_Message_Invalid_Colour);
-                    Player_Instructions();
-                    stringResponse = _console.ReadLine().ToUpper();
-                    colourStringList = stringResponse.Split((',')).ToList();
-                }
+                PrintErrorMessage(Constants.Error_Message_Invalid_Colour);
+                playerInput = GetPlayerColourInput();
             }
             
-            var colourEnumList = new List<Colour>();
-
-            foreach (var colour in colourStringList)
-            {
-                colourEnumList.Add((Colour)Enum.Parse(typeof(Colour), colour));
-            }
+            var colourEnumList = playerInput
+                .Split(',').Select(color => (Colour)Enum.Parse(typeof(Colour), color)).ToList();
             
             return colourEnumList;
         }
+
+        private string GetPlayerColourInput(){
+            Print_Player_Instructions();
+            return _console.ReadLine().ToUpper();
+        }
+
+        private void PrintErrorMessage(string errorMessage){
+            _console.WriteLine(errorMessage);
+        }
         
-        public void Player_Instructions()
+        public void Print_Player_Instructions()
         {
             _console.WriteLine("Please enter your guess of four colours for mastermind separated by comma (i.e. Red, Orange, Yellow, Orange)");
         }

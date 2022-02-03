@@ -30,5 +30,14 @@ namespace mastermind
             var patternIsMatch = validPattern.IsMatch(playerResponse);
             return stringIsNotEmpty && patternIsMatch;
         }
+
+        public bool ThereAreNotFourEntries(string playerInput){
+            return playerInput.Count(character => character == ',') != 4;
+        }
+
+        public bool AnyColourIsInvalidInInput(string playerInput){
+            return playerInput.Split(',').Any(colour => !_validator.IsValidColour(colour));
+        } 
+
     }
 }
